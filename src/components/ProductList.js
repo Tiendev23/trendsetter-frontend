@@ -62,6 +62,8 @@ export default function ProductList() {
                             <TableCell>Tên sản phẩm</TableCell>
                             <TableCell>Giá</TableCell>
                             <TableCell>Loại sản phẩm</TableCell>
+                            <TableCell>Thương hiệu</TableCell>
+                            <TableCell>Mô tả</TableCell>
                             <TableCell>Hành động</TableCell>
                         </TableRow>
                     </TableHead>
@@ -80,6 +82,8 @@ export default function ProductList() {
                                 <TableCell>{p.name}</TableCell>
                                 <TableCell>{p.price.toLocaleString()}</TableCell>
                                 <TableCell>{p.category?.name || 'Chưa có loại'}</TableCell>
+                                <TableCell>{p.brand?.name || '-'}</TableCell>
+                                <TableCell>{p.description || '-'}</TableCell>
                                 <TableCell>
                                     <IconButton onClick={() => handleEdit(p)}><EditIcon /></IconButton>
                                     <IconButton onClick={() => handleDelete(p._id)}><DeleteIcon /></IconButton>

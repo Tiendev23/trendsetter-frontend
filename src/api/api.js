@@ -28,8 +28,19 @@ export const deleteCategory = (id) => axios.delete(`${API_URL}/categories/${id}`
 
 // ===== Sản phẩm =====
 
-export const fetchProducts = (categoryId) => {
-  const url = categoryId ? `${API_URL}/products?category=${categoryId}` : `${API_URL}/products`;
+// Brand
+export const fetchBrands = () => axios.get(`${API_URL}/brands`);
+export const createBrand = (data) => axios.post(`${API_URL}/brands`, data);
+export const updateBrand = (id, data) => axios.put(`${API_URL}/brands/${id}`, data);
+export const deleteBrand = (id) => axios.delete(`${API_URL}/brands/${id}`);
+
+// Product
+export const fetchProducts = (filters = {}) => {
+  let url = `${API_URL}/products`;
+  const params = new URLSearchParams();
+  if (filters.category) params.append('category', filters.category);
+  if (filters.brand) params.append('brand', filters.brand);
+  if ([...params].length) url += `?${params.toString()}`;
   return axios.get(url);
 };
 
@@ -38,12 +49,10 @@ export const createProduct = (data) => {
   formData.append('name', data.name);
   formData.append('price', data.price);
   formData.append('category', data.category);
-  if (data.imageFile) {
-    formData.append('image', data.imageFile);
-  }
-  return axios.post(`${API_URL}/products`, formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  });
+  if (data.brand) formData.append('brand', data.brand);
+  formData.append('description', data.description || '');
+  if (data.imageFile) formData.append('image', data.imageFile);
+  return axios.post(`${API_URL}/products`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
 };
 
 export const updateProduct = (id, data) => {
@@ -51,12 +60,10 @@ export const updateProduct = (id, data) => {
   formData.append('name', data.name);
   formData.append('price', data.price);
   formData.append('category', data.category);
-  if (data.imageFile) {
-    formData.append('image', data.imageFile);
-  }
-  return axios.put(`${API_URL}/products/${id}`, formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  });
+  if (data.brand) formData.append('brand', data.brand);
+  formData.append('description', data.description || '');
+  if (data.imageFile) formData.append('image', data.imageFile);
+  return axios.put(`${API_URL}/products/${id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
 };
 
 export const deleteProduct = (id) => axios.delete(`${API_URL}/products/${id}`);
