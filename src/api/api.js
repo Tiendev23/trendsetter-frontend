@@ -43,7 +43,6 @@ export const fetchProducts = (filters = {}) => {
   if ([...params].length) url += `?${params.toString()}`;
   return axios.get(url);
 };
-
 export const createProduct = (data) => {
   const formData = new FormData();
   formData.append('name', data.name);
@@ -51,8 +50,13 @@ export const createProduct = (data) => {
   formData.append('category', data.category);
   if (data.brand) formData.append('brand', data.brand);
   formData.append('description', data.description || '');
+  formData.append('sizes', JSON.stringify(data.sizes || []));
+  formData.append('colors', JSON.stringify(data.colors || []));
   if (data.imageFile) formData.append('image', data.imageFile);
-  return axios.post(`${API_URL}/products`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+  if (data.bannerFile) formData.append('banner', data.bannerFile);
+  return axios.post(`${API_URL}/products`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
 };
 
 export const updateProduct = (id, data) => {
@@ -62,8 +66,14 @@ export const updateProduct = (id, data) => {
   formData.append('category', data.category);
   if (data.brand) formData.append('brand', data.brand);
   formData.append('description', data.description || '');
+  formData.append('sizes', JSON.stringify(data.sizes || []));
+  formData.append('colors', JSON.stringify(data.colors || []));
   if (data.imageFile) formData.append('image', data.imageFile);
-  return axios.put(`${API_URL}/products/${id}`, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+  if (data.bannerFile) formData.append('banner', data.bannerFile);
+  return axios.put(`${API_URL}/products/${id}`, formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
 };
+
 
 export const deleteProduct = (id) => axios.delete(`${API_URL}/products/${id}`);
