@@ -9,6 +9,7 @@ const navItems = [
     { text: 'Sản phẩm', path: '/products' },
     { text: 'Loại sản phẩm', path: '/categories' },
     { text: 'Thương hiệu', path: '/brands' },
+    { text: 'Tài khoản', path: '/users' },  // Thêm menu tài khoản
 ];
 
 export default function Layout() {
@@ -44,7 +45,7 @@ export default function Layout() {
                 </List>
             </Drawer>
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-                <Toolbar /> {/* để tạo khoảng trống header */}
+                <Toolbar /> {/* Khoảng trống header */}
                 <Outlet />
             </Box>
         </Box>

@@ -2,6 +2,22 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:5000/api';
 
+
+// ===== User =====
+export const fetchUsers = () => axios.get(`${API_URL}/users`);
+export const createUser = (data) => axios.post(`${API_URL}/users`, data);
+export const updateUser = (id, data) => axios.put(`${API_URL}/users/${id}`, data);
+export const deleteUser = (id) => axios.delete(`${API_URL}/users/${id}`);
+
+export const fetchCommentsByProduct = (productId) =>
+  axios.get(`${API_URL}/comments/product/${productId}`);
+
+export const createComment = (data) =>
+  axios.post(`${API_URL}/comments`, data);
+
+export const deleteComment = (id) =>
+  axios.delete(`${API_URL}/comments/${id}`);
+
 // ===== Loại sản phẩm =====
 export const fetchCategories = () => axios.get(`${API_URL}/categories`);
 

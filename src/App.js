@@ -5,6 +5,7 @@ import Layout from './components/Layout';
 import CategoryList from './components/CategoryList';
 import ProductList from './components/ProductList';
 import BrandList from './components/BrandList';
+import UserList from './components/UserList';
 
 function App() {
   return (
@@ -15,7 +16,8 @@ function App() {
           <Route path="categories" element={<CategoryList />} />
           <Route path="products" element={<ProductList />} />
           <Route path="brands" element={<BrandList />} />
-          {/* Có thể thêm các route khác */}
+          <Route path="users" element={<UserList />} />
+          {/* Các route khác nếu có */}
         </Route>
       </Routes>
     </Router>
