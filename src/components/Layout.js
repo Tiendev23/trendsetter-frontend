@@ -9,8 +9,10 @@ const navItems = [
     { text: 'Sản phẩm', path: '/products' },
     { text: 'Loại sản phẩm', path: '/categories' },
     { text: 'Thương hiệu', path: '/brands' },
-    { text: 'Tài khoản', path: '/users' },  // Thêm menu tài khoản
+    { text: 'Tài khoản', path: '/users' },
+    { text: 'Đơn hàng', path: '/orders' },  // thêm mục đơn hàng
 ];
+
 
 export default function Layout() {
     const location = useLocation();

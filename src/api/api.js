@@ -18,6 +18,28 @@ export const createComment = (data) =>
 export const deleteComment = (id) =>
   axios.delete(`${API_URL}/comments/${id}`);
 
+// ===== Favorites =====
+export const fetchUserFavorites = (userId) =>
+  axios.get(`${API_URL}/users/${userId}/favorites`);
+
+export const addUserFavorite = (userId, productId) =>
+  axios.post(`${API_URL}/users/${userId}/favorites`, { productId });
+
+export const removeUserFavorite = (userId, productId) =>
+  axios.delete(`${API_URL}/users/${userId}/favorites/${productId}`);
+
+
+export const fetchProductById = (id) => axios.get(`${API_URL}/products/${id}`);
+
+
+// ===== Đơn hàng =====
+export const fetchOrders = () => axios.get(`${API_URL}/orders`);
+export const fetchOrderById = (id) => axios.get(`${API_URL}/orders/${id}`);
+export const createOrder = (data) => axios.post(`${API_URL}/orders`, data);
+export const updateOrderStatus = (id, status) => axios.put(`${API_URL}/orders/${id}/status`, { status });
+export const deleteOrder = (id) => axios.delete(`${API_URL}/orders/${id}`);
+
+
 // ===== Loại sản phẩm =====
 export const fetchCategories = () => axios.get(`${API_URL}/categories`);
 

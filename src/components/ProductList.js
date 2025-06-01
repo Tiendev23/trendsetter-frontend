@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { fetchProducts, deleteProduct } from '../api/api';
 import ProductForm from './ProductForm';
 
@@ -103,7 +104,11 @@ export default function ProductList() {
                     '-'
                   )}
                 </TableCell>
-                <TableCell>{p.name}</TableCell>
+                <TableCell>
+                  <Link to={`/products/${p._id}`} style={{ color: 'blue', textDecoration: 'underline' }}>
+                    {p.name}
+                  </Link>
+                </TableCell>
                 <TableCell>{p.price.toLocaleString()}</TableCell>
                 <TableCell>{p.category?.name || 'Chưa có loại'}</TableCell>
                 <TableCell>{p.brand?.name || '-'}</TableCell>
@@ -112,8 +117,8 @@ export default function ProductList() {
                   <Stack direction="row" spacing={1} flexWrap="wrap">
                     {p.sizes && p.sizes.length > 0
                       ? p.sizes.map((size) => (
-                          <Chip key={size} label={size} size="small" />
-                        ))
+                        <Chip key={size} label={size} size="small" />
+                      ))
                       : '-'}
                   </Stack>
                 </TableCell>
@@ -121,8 +126,8 @@ export default function ProductList() {
                   <Stack direction="row" spacing={1} flexWrap="wrap">
                     {p.colors && p.colors.length > 0
                       ? p.colors.map((color) => (
-                          <Chip key={color} label={color} size="small" />
-                        ))
+                        <Chip key={color} label={color} size="small" />
+                      ))
                       : '-'}
                   </Stack>
                 </TableCell>
