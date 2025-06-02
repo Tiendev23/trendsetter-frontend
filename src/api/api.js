@@ -42,25 +42,10 @@ export const deleteOrder = (id) => axios.delete(`${API_URL}/orders/${id}`);
 
 // ===== Loại sản phẩm =====
 export const fetchCategories = () => axios.get(`${API_URL}/categories`);
-
-export const createCategory = (data) => {
-  if (data instanceof FormData) {
-    return axios.post(`${API_URL}/categories`, data, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
-  }
-  return axios.post(`${API_URL}/categories`, data);
-};
-
-export const updateCategory = (id, data) => {
-  if (data instanceof FormData) {
-    return axios.put(`${API_URL}/categories/${id}`, data, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    });
-  }
-  return axios.put(`${API_URL}/categories/${id}`, data);
-};
-
+export const fetchLevelOneCategories = () => axios.get(`${API_URL}/categories/level-one`);
+export const fetchSubCategories = (parentId) => axios.get(`${API_URL}/categories/sub/${parentId}`);
+export const createCategory = (data) => axios.post(`${API_URL}/categories`, data);
+export const updateCategory = (id, data) => axios.put(`${API_URL}/categories/${id}`, data);
 export const deleteCategory = (id) => axios.delete(`${API_URL}/categories/${id}`);
 
 
