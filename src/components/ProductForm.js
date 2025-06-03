@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-    createProduct, updateProduct, fetchLevelOneCategories, fetchSubCategories, fetchBrands
-} from '../api/api';
+import { createProduct, updateProduct, fetchCategories, fetchBrands } from '../api/api';
 
 import {
     Box,
@@ -26,14 +24,12 @@ export default function ProductForm({ product, onSuccess }) {
     // Các state quản lý form
     const [name, setName] = useState('');
     const [price, setPrice] = useState('');
-    const [parentCategory, setParentCategory] = useState(''); // loại cấp 1
-    const [category, setCategory] = useState(''); // loại cấp 2
-    const [categoriesLevelTwo, setCategoriesLevelTwo] = useState([]);
+    const [category, setCategory] = useState('');
     const [brand, setBrand] = useState('');
     const [description, setDescription] = useState('');
     const [sizes, setSizes] = useState([]);
     const [colors, setColors] = useState([]);
-    const [levelOneCategories, setLevelOneCategories] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [brands, setBrands] = useState([]);
 
     const [imageFile, setImageFile] = useState(null);
@@ -42,7 +38,7 @@ export default function ProductForm({ product, onSuccess }) {
     const [bannerPreview, setBannerPreview] = useState('');
 
     useEffect(() => {
-        fetchLevelOneCategories().then(res => setLevelOneCategories(res.data));
+        fetchCategories().then(res => setCategories(res.data));
         fetchBrands().then(res => setBrands(res.data));
     }, []);
 
@@ -50,7 +46,6 @@ export default function ProductForm({ product, onSuccess }) {
         if (product) {
             setName(product.name);
             setPrice(product.price);
-            setParentCategory(product.category?.parent ? product.category.parent._id : '');
             setCategory(product.category?._id || '');
             setBrand(product.brand?._id || '');
             setDescription(product.description || '');
@@ -63,7 +58,6 @@ export default function ProductForm({ product, onSuccess }) {
         } else {
             setName('');
             setPrice('');
-            setParentCategory('');
             setCategory('');
             setBrand('');
             setDescription('');
@@ -75,16 +69,6 @@ export default function ProductForm({ product, onSuccess }) {
             setBannerFile(null);
         }
     }, [product]);
-
-    // Khi parentCategory thay đổi, load danh sách cấp 2
-    useEffect(() => {
-        if (parentCategory) {
-            fetchSubCategories(parentCategory).then(res => setCategoriesLevelTwo(res.data));
-        } else {
-            setCategoriesLevelTwo([]);
-            setCategory('');
-        }
-    }, [parentCategory]);
 
     // Xử lý thay đổi file ảnh sản phẩm
     const handleImageChange = (e) => {
@@ -135,7 +119,7 @@ export default function ProductForm({ product, onSuccess }) {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (!name.trim() || !price || !category) {
-            alert('Vui lòng nhập đầy đủ thông tin (tên, giá, loại sản phẩm cấp 2)');
+            alert('Vui lòng nhập đầy đủ thông tin');
             return;
         }
 
@@ -159,7 +143,6 @@ export default function ProductForm({ product, onSuccess }) {
             onSuccess();
             setName('');
             setPrice('');
-            setParentCategory('');
             setCategory('');
             setBrand('');
             setDescription('');
@@ -176,7 +159,7 @@ export default function ProductForm({ product, onSuccess }) {
         <Box
             component="form"
             onSubmit={handleSubmit}
-            sx={{ mb: 3, display: 'flex', flexDirection: 'column', gap: 2, maxWidth: 600 }}
+            sx={{ mb: 3, display: 'flex', flexDirection: 'column', gap: 2, maxWidth: 500 }}
         >
             <TextField
                 label="Tên sản phẩm"
@@ -195,41 +178,21 @@ export default function ProductForm({ product, onSuccess }) {
                 onChange={e => setPrice(e.target.value)}
                 required
             />
-
-            {/* Chọn loại cấp 1 */}
             <FormControl variant="outlined" size="small" required>
-                <InputLabel>Loại cấp 1</InputLabel>
+                <InputLabel>Loại sản phẩm</InputLabel>
                 <Select
-                    label="Loại cấp 1"
-                    value={parentCategory}
-                    onChange={e => setParentCategory(e.target.value)}
-                >
-                    <MenuItem value="">
-                        <em>Chọn loại cấp 1</em>
-                    </MenuItem>
-                    {levelOneCategories.map(c => (
-                        <MenuItem key={c._id} value={c._id}>{c.name}</MenuItem>
-                    ))}
-                </Select>
-            </FormControl>
-
-            {/* Chọn loại cấp 2 */}
-            <FormControl variant="outlined" size="small" required disabled={!parentCategory}>
-                <InputLabel>Loại cấp 2</InputLabel>
-                <Select
-                    label="Loại cấp 2"
+                    label="Loại sản phẩm"
                     value={category}
                     onChange={e => setCategory(e.target.value)}
                 >
                     <MenuItem value="">
-                        <em>Chọn loại cấp 2</em>
+                        <em>Chọn loại sản phẩm</em>
                     </MenuItem>
-                    {categoriesLevelTwo.map(c => (
+                    {categories.map(c => (
                         <MenuItem key={c._id} value={c._id}>{c.name}</MenuItem>
                     ))}
                 </Select>
             </FormControl>
-
             <FormControl variant="outlined" size="small">
                 <InputLabel>Thương hiệu</InputLabel>
                 <Select
@@ -245,7 +208,6 @@ export default function ProductForm({ product, onSuccess }) {
                     ))}
                 </Select>
             </FormControl>
-
             <TextField
                 label="Mô tả sản phẩm"
                 variant="outlined"
@@ -256,9 +218,47 @@ export default function ProductForm({ product, onSuccess }) {
                 onChange={e => setDescription(e.target.value)}
             />
 
-            {/* Các phần còn lại giữ nguyên (size, color, ảnh, banner) như trước */}
+            <Box>
+                <Typography variant="subtitle1" gutterBottom>
+                    Chọn Size sản phẩm
+                </Typography>
+                <FormGroup row>
+                    {AVAILABLE_SIZES.map(size => (
+                        <FormControlLabel
+                            key={size}
+                            control={
+                                <Checkbox
+                                    checked={sizes.includes(size)}
+                                    onChange={handleSizeChange}
+                                    name={size}
+                                />
+                            }
+                            label={size}
+                        />
+                    ))}
+                </FormGroup>
+            </Box>
 
-            {/* ... phần checkbox chọn size, color và upload ảnh tương tự như code trước ... */}
+            <Box>
+                <Typography variant="subtitle1" gutterBottom>
+                    Chọn Màu sản phẩm
+                </Typography>
+                <FormGroup row>
+                    {AVAILABLE_COLORS.map(color => (
+                        <FormControlLabel
+                            key={color}
+                            control={
+                                <Checkbox
+                                    checked={colors.includes(color)}
+                                    onChange={handleColorChange}
+                                    name={color}
+                                />
+                            }
+                            label={color}
+                        />
+                    ))}
+                </FormGroup>
+            </Box>
 
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                 <Button variant="contained" component="label" size="small">
