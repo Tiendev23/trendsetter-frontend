@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'https://trendsetter-backend.onrender.com/api';
 
 
 // ===== User =====
@@ -10,23 +10,23 @@ export const updateUser = (id, data) => axios.put(`${API_URL}/users/${id}`, data
 export const deleteUser = (id) => axios.delete(`${API_URL}/users/${id}`);
 
 export const fetchCommentsByProduct = (productId) =>
-  axios.get(`${API_URL}/comments/product/${productId}`);
+    axios.get(`${API_URL}/comments/product/${productId}`);
 
 export const createComment = (data) =>
-  axios.post(`${API_URL}/comments`, data);
+    axios.post(`${API_URL}/comments`, data);
 
 export const deleteComment = (id) =>
-  axios.delete(`${API_URL}/comments/${id}`);
+    axios.delete(`${API_URL}/comments/${id}`);
 
 // ===== Favorites =====
 export const fetchUserFavorites = (userId) =>
-  axios.get(`${API_URL}/users/${userId}/favorites`);
+    axios.get(`${API_URL}/users/${userId}/favorites`);
 
 export const addUserFavorite = (userId, productId) =>
-  axios.post(`${API_URL}/users/${userId}/favorites`, { productId });
+    axios.post(`${API_URL}/users/${userId}/favorites`, { productId });
 
 export const removeUserFavorite = (userId, productId) =>
-  axios.delete(`${API_URL}/users/${userId}/favorites/${productId}`);
+    axios.delete(`${API_URL}/users/${userId}/favorites/${productId}`);
 
 
 export const fetchProductById = (id) => axios.get(`${API_URL}/products/${id}`);
@@ -59,43 +59,43 @@ export const deleteBrand = (id) => axios.delete(`${API_URL}/brands/${id}`);
 
 // Product
 export const fetchProducts = (filters = {}) => {
-  let url = `${API_URL}/products`;
-  const params = new URLSearchParams();
-  if (filters.category) params.append('category', filters.category);
-  if (filters.brand) params.append('brand', filters.brand);
-  if ([...params].length) url += `?${params.toString()}`;
-  return axios.get(url);
+    let url = `${API_URL}/products`;
+    const params = new URLSearchParams();
+    if (filters.category) params.append('category', filters.category);
+    if (filters.brand) params.append('brand', filters.brand);
+    if ([...params].length) url += `?${params.toString()}`;
+    return axios.get(url);
 };
 export const createProduct = (data) => {
-  const formData = new FormData();
-  formData.append('name', data.name);
-  formData.append('price', data.price);
-  formData.append('category', data.category);
-  if (data.brand) formData.append('brand', data.brand);
-  formData.append('description', data.description || '');
-  formData.append('sizes', JSON.stringify(data.sizes || []));
-  formData.append('colors', JSON.stringify(data.colors || []));
-  if (data.imageFile) formData.append('image', data.imageFile);
-  if (data.bannerFile) formData.append('banner', data.bannerFile);
-  return axios.post(`${API_URL}/products`, formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  });
+    const formData = new FormData();
+    formData.append('name', data.name);
+    formData.append('price', data.price);
+    formData.append('category', data.category);
+    if (data.brand) formData.append('brand', data.brand);
+    formData.append('description', data.description || '');
+    formData.append('sizes', JSON.stringify(data.sizes || []));
+    formData.append('colors', JSON.stringify(data.colors || []));
+    if (data.imageFile) formData.append('image', data.imageFile);
+    if (data.bannerFile) formData.append('banner', data.bannerFile);
+    return axios.post(`${API_URL}/products`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+    });
 };
 
 export const updateProduct = (id, data) => {
-  const formData = new FormData();
-  formData.append('name', data.name);
-  formData.append('price', data.price);
-  formData.append('category', data.category);
-  if (data.brand) formData.append('brand', data.brand);
-  formData.append('description', data.description || '');
-  formData.append('sizes', JSON.stringify(data.sizes || []));
-  formData.append('colors', JSON.stringify(data.colors || []));
-  if (data.imageFile) formData.append('image', data.imageFile);
-  if (data.bannerFile) formData.append('banner', data.bannerFile);
-  return axios.put(`${API_URL}/products/${id}`, formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  });
+    const formData = new FormData();
+    formData.append('name', data.name);
+    formData.append('price', data.price);
+    formData.append('category', data.category);
+    if (data.brand) formData.append('brand', data.brand);
+    formData.append('description', data.description || '');
+    formData.append('sizes', JSON.stringify(data.sizes || []));
+    formData.append('colors', JSON.stringify(data.colors || []));
+    if (data.imageFile) formData.append('image', data.imageFile);
+    if (data.bannerFile) formData.append('banner', data.bannerFile);
+    return axios.put(`${API_URL}/products/${id}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+    });
 };
 
 
