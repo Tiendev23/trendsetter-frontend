@@ -109,7 +109,7 @@ export default function ProductList() {
                     {p.name}
                   </Link>
                 </TableCell>
-                <TableCell>{p.price.toLocaleString()}</TableCell>
+                <TableCell>  {p.price != null ? p.price.toLocaleString() : 'N/A'}</TableCell>
                 <TableCell>{p.category?.name || 'Chưa có loại'}</TableCell>
                 <TableCell>{p.brand?.name || '-'}</TableCell>
                 <TableCell>{p.description || '-'}</TableCell>
