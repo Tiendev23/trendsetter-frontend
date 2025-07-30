@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect } from 'react';
 import { createProduct, updateProduct, fetchCategories, fetchBrands } from '../api/api';
 
@@ -14,7 +15,6 @@ import {
     FormControlLabel,
     Checkbox,
     Typography,
-    Stack,
 } from '@mui/material';
 
 const AVAILABLE_SIZES = ['S', 'M', 'L', 'XL', 'XXL'];
@@ -69,6 +69,8 @@ export default function ProductForm({ product, onSuccess }) {
             setBannerFile(null);
         }
     }, [product]);
+
+
 
     // Xử lý thay đổi file ảnh sản phẩm
     const handleImageChange = (e) => {

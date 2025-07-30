@@ -81,7 +81,7 @@ export default function OrderList() {
                                 </TableCell>
                                 <TableCell>{order.user?.fullName || order.user?.username || '-'}</TableCell>
                                 <TableCell>{new Date(order.createdAt).toLocaleString()}</TableCell>
-                                <TableCell>{order.totalPrice.toLocaleString()}</TableCell>
+                                <TableCell>{order.totalPrice != null ? order.totalPrice.toLocaleString() : 'N/A'}</TableCell>
                                 <TableCell>
                                     <Select
                                         value={order.status}
