@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { fetchProducts, deleteProduct } from '../api/api';
 import ProductForm from './ProductForm';
@@ -17,6 +17,11 @@ import {
   Avatar,
   Chip,
   Stack,
+  TextField,
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl,
 } from '@mui/material';
 
 import EditIcon from '@mui/icons-material/Edit';
@@ -26,15 +31,29 @@ export default function ProductList() {
   const [products, setProducts] = useState([]);
   const [editingProduct, setEditingProduct] = useState(null);
 
-  const loadProducts = () => {
-    fetchProducts()
+  // States for filtering and searching
+  const [searchTerm, setSearchTerm] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('');
+  const [brandFilter, setBrandFilter] = useState('');
+  const [priceRange, setPriceRange] = useState([0, 1000]);
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const loadProducts = useCallback(() => {
+    const filters = {
+      name: searchTerm,
+      category: categoryFilter,
+      brand: brandFilter,
+      minPrice: priceRange[0],
+      maxPrice: priceRange[1],
+    };
+    fetchProducts(filters)
       .then(res => setProducts(res.data))
       .catch(() => alert('Lỗi khi tải danh sách sản phẩm'));
-  };
+  });
 
   useEffect(() => {
     loadProducts();
-  }, []);
+  }, [searchTerm, categoryFilter, brandFilter, priceRange, loadProducts] );
 
   const handleDelete = (id) => {
     if (window.confirm('Bạn chắc chắn muốn xóa?')) {
@@ -58,7 +77,74 @@ export default function ProductList() {
       <Typography variant="h4" gutterBottom>
         Quản lý Sản phẩm
       </Typography>
+
+      {/* Search and Filters */}
+      <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
+        <TextField
+          label="Tìm kiếm sản phẩm"
+          variant="outlined"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          size="small"
+          sx={{ flexGrow: 1 }}
+        />
+
+        <FormControl variant="outlined" size="small">
+          <InputLabel>Loại sản phẩm</InputLabel>
+          <Select
+            label="Loại sản phẩm"
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+          >
+            <MenuItem value="">
+              <em>Tất cả</em>
+            </MenuItem>
+            {/* Add categories dynamically */}
+            <MenuItem value="category1">Danh mục 1</MenuItem>
+            <MenuItem value="category2">Danh mục 2</MenuItem>
+          </Select>
+        </FormControl>
+
+        <FormControl variant="outlined" size="small">
+          <InputLabel>Thương hiệu</InputLabel>
+          <Select
+            label="Thương hiệu"
+            value={brandFilter}
+            onChange={(e) => setBrandFilter(e.target.value)}
+          >
+            <MenuItem value="">
+              <em>Tất cả</em>
+            </MenuItem>
+            {/* Add brands dynamically */}
+            <MenuItem value="brand1">Thương hiệu 1</MenuItem>
+            <MenuItem value="brand2">Thương hiệu 2</MenuItem>
+          </Select>
+        </FormControl>
+
+        <TextField
+          label="Giá (từ)"
+          variant="outlined"
+          type="number"
+          value={priceRange[0]}
+          onChange={(e) => setPriceRange([e.target.value, priceRange[1]])}
+          size="small"
+          sx={{ width: 100 }}
+        />
+        <TextField
+          label="Giá (đến)"
+          variant="outlined"
+          type="number"
+          value={priceRange[1]}
+          onChange={(e) => setPriceRange([priceRange[0], e.target.value])}
+          size="small"
+          sx={{ width: 100 }}
+        />
+      </Box>
+
+      {/* Product Form */}
       <ProductForm product={editingProduct} onSuccess={handleFormSuccess} />
+
+      {/* Product Table */}
       <TableContainer component={Paper}>
         <Table>
           <TableHead>

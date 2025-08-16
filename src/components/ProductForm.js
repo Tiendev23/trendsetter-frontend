@@ -118,30 +118,29 @@ export default function ProductForm({ product, onSuccess }) {
         }
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (!name.trim() || !price || !category) {
-            alert('Vui lòng nhập đầy đủ thông tin');
-            return;
-        }
+const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!name.trim() || !price || !category) {
+        alert('Vui lòng nhập đầy đủ thông tin');
+        return;
+    }
 
-        const data = {
-            name,
-            price: parseFloat(price),
-            category,
-            brand,
-            description,
-            sizes,
-            colors,
-            imageFile,
-            bannerFile,
-        };
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('price', parseFloat(price));
+    formData.append('category', category);
+    formData.append('brand', brand);
+    formData.append('description', description);
+    formData.append('sizes', JSON.stringify(sizes));
+    formData.append('colors', JSON.stringify(colors));
 
-        const action = product
-            ? updateProduct(product._id, data)
-            : createProduct(data);
+    if (imageFile) formData.append('image', imageFile);
+    if (bannerFile) formData.append('banner', bannerFile);
 
-        action.then(() => {
+    const action = product ? updateProduct(product._id, formData) : createProduct(formData);
+
+    action
+        .then(() => {
             onSuccess();
             setName('');
             setPrice('');
@@ -154,8 +153,10 @@ export default function ProductForm({ product, onSuccess }) {
             setImageFile(null);
             setBannerPreview('');
             setBannerFile(null);
-        }).catch(() => alert('Lỗi khi lưu sản phẩm'));
-    };
+        })
+        .catch(() => alert('Lỗi khi lưu sản phẩm'));
+};
+
 
     return (
         <Box
