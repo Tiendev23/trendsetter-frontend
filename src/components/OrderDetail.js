@@ -12,13 +12,13 @@ import {
     TableHead,
     TableRow,
     Paper,
-    Stack,
-    Chip,
     Select,
     MenuItem,
     Button,
     CircularProgress,
 } from '@mui/material';
+// eslint-disable-next-line no-unused-vars
+import { Stack, Chip } from '@mui/material';
 
 export default function OrderDetail() {
     const { id } = useParams();

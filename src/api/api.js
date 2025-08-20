@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API_URL = 'https://trendsetter-backend.onrender.com/api';
+// const API_URL = 'https://trendsetter-backend.onrender.com/api';
+
+const API_URL = 'http://localhost:5000/api';
 
 
 // ===== User =====
