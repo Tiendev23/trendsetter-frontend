@@ -1,7 +1,9 @@
 import React from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 
-import { Box, Drawer, List, ListItem, ListItemButton, ListItemText, Toolbar, Typography } from '@mui/material';
+import { Box, Drawer, List, ListItem, ListItemButton, ListItemText, Toolbar, Typography, Divider, ListItemIcon } from '@mui/material';
+import LogoutIcon from '@mui/icons-material/Logout'; // <<-- Mới: Import icon
+import { logout } from '../api/api'; // <<-- Mới: Import hàm logout
 
 const drawerWidth = 240;
 
@@ -10,7 +12,7 @@ const navItems = [
     { text: 'Loại sản phẩm', path: '/categories' },
     { text: 'Thương hiệu', path: '/brands' },
     { text: 'Tài khoản', path: '/users' },
-    { text: 'Đơn hàng', path: '/orders' },  // thêm mục đơn hàng
+    { text: 'Đơn hàng', path: '/orders' },
 ];
 
 
@@ -24,30 +26,52 @@ export default function Layout() {
                 sx={{
                     width: drawerWidth,
                     flexShrink: 0,
-                    [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box' },
+                    [`& .MuiDrawer-paper`]: { 
+                        width: drawerWidth, 
+                        boxSizing: 'border-box',
+                        display: 'flex',      
+                        flexDirection: 'column'
+                    },
                 }}
             >
-                <Toolbar>
-                    <Typography variant="h6" noWrap component="div">
-                        Admin Trendsetter
-                    </Typography>
-                </Toolbar>
-                <List>
-                    {navItems.map(({ text, path }) => (
-                        <ListItem key={text} disablePadding>
-                            <ListItemButton
-                                component={Link}
-                                to={path}
-                                selected={location.pathname === path}
-                            >
-                                <ListItemText primary={text} />
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
+                <div> 
+                    <Toolbar>
+                        <Typography variant="h6" noWrap component="div">
+                            Admin Trendsetter
+                        </Typography>
+                    </Toolbar>
+                    <Divider />
+                    <List>
+                        {navItems.map(({ text, path }) => (
+                            <ListItem key={text} disablePadding>
+                                <ListItemButton
+                                    component={Link}
+                                    to={path}
+                                    selected={location.pathname.startsWith(path)}
+                                >
+                                    <ListItemText primary={text} />
+                                </ListItemButton>
+                            </ListItem>
+                        ))}
+                    </List>
+                </div>
+
+                {/* Phần Đăng xuất */}
+                <List sx={{ marginTop: 'auto' }}> 
+                    <Divider />
+                    <ListItem disablePadding>
+                        <ListItemButton onClick={logout}>
+                            <ListItemIcon>
+                                <LogoutIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Đăng xuất" />
+                        </ListItemButton>
+                    </ListItem>
                 </List>
             </Drawer>
+            
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-                <Toolbar /> {/* Khoảng trống header */}
+                <Toolbar /> 
                 <Outlet />
             </Box>
         </Box>

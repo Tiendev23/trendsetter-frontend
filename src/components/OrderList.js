@@ -63,7 +63,7 @@ export default function OrderList() {
                             <TableCell>Mã đơn hàng</TableCell>
                             <TableCell>Khách hàng</TableCell>
                             <TableCell>Ngày đặt</TableCell>
-                            <TableCell>Tổng tiền</TableCell>
+                            {/* <TableCell>Tổng tiền</TableCell> */}
                             <TableCell>Trạng thái</TableCell>
                             <TableCell>Hành động</TableCell>
                         </TableRow>
@@ -81,7 +81,7 @@ export default function OrderList() {
                                 </TableCell>
                                 <TableCell>{order.user?.fullName || order.user?.username || '-'}</TableCell>
                                 <TableCell>{new Date(order.createdAt).toLocaleString()}</TableCell>
-                                <TableCell>{order.totalPrice.toLocaleString()}</TableCell>
+                                {/* <TableCell>{order.totalPrice.toLocaleString()}</TableCell> */}
                                 <TableCell>
                                     <Select
                                         value={order.status}

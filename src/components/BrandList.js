@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { fetchBrands, createBrand, updateBrand, deleteBrand } from '../api/api';
+import { fetchBrands, createBrand, updateBrand, deleteBrand, fetchProducts } from '../api/api';
 
 import {
     Box,
@@ -76,11 +76,25 @@ export default function BrandList() {
         loadBrands();
     }, []);
 
-    const handleDelete = (id) => {
-        if (window.confirm('Bạn chắc chắn muốn xóa thương hiệu này?')) {
-            deleteBrand(id)
-                .then(() => loadBrands())
-                .catch(() => alert('Xóa thất bại'));
+    const handleDelete = async (id) => {
+        const ok = window.confirm('Bạn chắc chắn muốn xóa thương hiệu này?');
+        if (!ok) return;
+
+        try {
+            //  Kiểm tra xem còn sản phẩm thuộc brand không
+            const res = await fetchProducts({ brand: id });
+            if (res.data.data.length > 0) {
+                alert('Không thể xóa thương hiệu này vì vẫn còn sản phẩm thuộc thương hiệu');
+                return;
+            }
+
+            //  Nếu không còn sản phẩm => xóa brand
+            await deleteBrand(id);
+            alert('Xóa thương hiệu thành công');
+            loadBrands();
+        } catch (err) {
+            alert('Xóa thất bại hoặc không thể kiểm tra sản phẩm');
+            console.error(err);
         }
     };
 

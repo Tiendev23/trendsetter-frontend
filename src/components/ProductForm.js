@@ -1,27 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { createProduct, updateProduct, fetchCategories, fetchBrands } from '../api/api';
-
 import {
-    Box,
-    Button,
-    TextField,
-    MenuItem,
-    Select,
-    InputLabel,
-    FormControl,
-    Avatar,
-    FormGroup,
-    FormControlLabel,
-    Checkbox,
-    Typography,
-    Stack,
+    Box, Button, TextField, MenuItem, Select, InputLabel, FormControl,
+    Avatar, FormGroup, FormControlLabel, Checkbox, Typography
 } from '@mui/material';
 
-const AVAILABLE_SIZES = ['S', 'M', 'L', 'XL', 'XXL'];
+const AVAILABLE_SIZES = ["38", "39", "40", "41", "42", "49"];
 const AVAILABLE_COLORS = ['Đỏ', 'Xanh', 'Vàng', 'Đen', 'Trắng'];
 
 export default function ProductForm({ product, onSuccess }) {
-    // Các state quản lý form
     const [name, setName] = useState('');
     const [price, setPrice] = useState('');
     const [category, setCategory] = useState('');
@@ -52,8 +39,8 @@ export default function ProductForm({ product, onSuccess }) {
             setSizes(product.sizes || []);
             setColors(product.colors || []);
             setPreview(product.image || '');
-            setImageFile(null);
             setBannerPreview(product.banner || '');
+            setImageFile(null);
             setBannerFile(null);
         } else {
             setName('');
@@ -70,7 +57,16 @@ export default function ProductForm({ product, onSuccess }) {
         }
     }, [product]);
 
-    // Xử lý thay đổi file ảnh sản phẩm
+    const handleSizeChange = (e) => {
+        const s = e.target.name;
+        setSizes(prev => e.target.checked ? [...prev, s] : prev.filter(x => x !== s));
+    };
+
+    const handleColorChange = (e) => {
+        const c = e.target.name;
+        setColors(prev => e.target.checked ? [...prev, c] : prev.filter(x => x !== c));
+    };
+
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         setImageFile(file);
@@ -83,7 +79,6 @@ export default function ProductForm({ product, onSuccess }) {
         }
     };
 
-    // Xử lý thay đổi file ảnh banner
     const handleBannerChange = (e) => {
         const file = e.target.files[0];
         setBannerFile(file);
@@ -96,206 +91,126 @@ export default function ProductForm({ product, onSuccess }) {
         }
     };
 
-    // Xử lý thay đổi size checkbox
-    const handleSizeChange = (event) => {
-        const size = event.target.name;
-        if (event.target.checked) {
-            setSizes(prev => [...prev, size]);
-        } else {
-            setSizes(prev => prev.filter(s => s !== size));
-        }
-    };
+    const handleSubmit = async (e) => {
+    e.preventDefault();
 
-    // Xử lý thay đổi color checkbox
-    const handleColorChange = (event) => {
-        const color = event.target.name;
-        if (event.target.checked) {
-            setColors(prev => [...prev, color]);
-        } else {
-            setColors(prev => prev.filter(c => c !== color));
-        }
-    };
+    if (!name || !price || !category || colors.length === 0 || sizes.length === 0) {
+        alert('Vui lòng nhập đầy đủ thông tin, chọn size và màu');
+        return;
+    }
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        if (!name.trim() || !price || !category) {
-            alert('Vui lòng nhập đầy đủ thông tin');
-            return;
-        }
+    try {
+        const variants = colors.map(color => ({
+            color,
+            basePrice: parseFloat(price),
+            inventories: sizes.map(size => ({ size: parseInt(size), stock: 10 })) // stock mặc định
+        }));
 
-        const data = {
-            name,
-            price: parseFloat(price),
-            category,
-            brand,
-            description,
-            sizes,
-            colors,
-            imageFile,
-            bannerFile,
-        };
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('category', category);
+        if (brand) formData.append('brand', brand);
+        formData.append('description', description || '');
+        formData.append('variants', JSON.stringify(variants));
+
+        colors.forEach((color, index) => {
+            if (imageFile) formData.append(`images_${index}`, imageFile);
+        });
+
+        if (bannerFile) formData.append('banner', bannerFile);
 
         const action = product
-            ? updateProduct(product._id, data)
-            : createProduct(data);
+            ? updateProduct(product._id, formData)
+            : createProduct(formData);
 
-        action.then(() => {
-            onSuccess();
-            setName('');
-            setPrice('');
-            setCategory('');
-            setBrand('');
-            setDescription('');
-            setSizes([]);
-            setColors([]);
-            setPreview('');
-            setImageFile(null);
-            setBannerPreview('');
-            setBannerFile(null);
-        }).catch(() => alert('Lỗi khi lưu sản phẩm'));
-    };
+        const res = await action;
+
+        alert('Lưu sản phẩm thành công');
+        onSuccess?.();
+
+        // Reset form
+        setName('');
+        setPrice('');
+        setCategory('');
+        setBrand('');
+        setDescription('');
+        setSizes([]);
+        setColors([]);
+        setPreview('');
+        setImageFile(null);
+        setBannerPreview('');
+        setBannerFile(null);
+
+    } catch (err) {
+        console.error('Lỗi khi lưu sản phẩm:', err.response || err);
+        if (err.response?.data?.message) {
+            alert(`Lỗi: ${err.response.data.message}`);
+        } else {
+            alert('Lỗi khi lưu sản phẩm');
+        }
+    }
+};
+
+
 
     return (
-        <Box
-            component="form"
-            onSubmit={handleSubmit}
-            sx={{ mb: 3, display: 'flex', flexDirection: 'column', gap: 2, maxWidth: 500 }}
-        >
-            <TextField
-                label="Tên sản phẩm"
-                variant="outlined"
-                size="small"
-                value={name}
-                onChange={e => setName(e.target.value)}
-                required
-            />
-            <TextField
-                label="Giá"
-                variant="outlined"
-                size="small"
-                type="number"
-                value={price}
-                onChange={e => setPrice(e.target.value)}
-                required
-            />
-            <FormControl variant="outlined" size="small" required>
+        <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2, maxWidth: 600 }}>
+            <TextField label="Tên sản phẩm" variant="outlined" size="small" value={name} onChange={e => setName(e.target.value)} required />
+            <TextField label="Giá" variant="outlined" size="small" type="number" value={price} onChange={e => setPrice(e.target.value)} required />
+
+            <FormControl size="small" required>
                 <InputLabel>Loại sản phẩm</InputLabel>
-                <Select
-                    label="Loại sản phẩm"
-                    value={category}
-                    onChange={e => setCategory(e.target.value)}
-                >
-                    <MenuItem value="">
-                        <em>Chọn loại sản phẩm</em>
-                    </MenuItem>
-                    {categories.map(c => (
-                        <MenuItem key={c._id} value={c._id}>{c.name}</MenuItem>
-                    ))}
+                <Select value={category} onChange={e => setCategory(e.target.value)}>
+                    <MenuItem value=""><em>Chọn loại</em></MenuItem>
+                    {categories.map(c => <MenuItem key={c._id} value={c._id}>{c.name}</MenuItem>)}
                 </Select>
             </FormControl>
-            <FormControl variant="outlined" size="small">
+
+            <FormControl size="small">
                 <InputLabel>Thương hiệu</InputLabel>
-                <Select
-                    label="Thương hiệu"
-                    value={brand}
-                    onChange={e => setBrand(e.target.value)}
-                >
-                    <MenuItem value="">
-                        <em>Chọn thương hiệu</em>
-                    </MenuItem>
-                    {brands.map(b => (
-                        <MenuItem key={b._id} value={b._id}>{b.name}</MenuItem>
-                    ))}
+                <Select value={brand} onChange={e => setBrand(e.target.value)}>
+                    <MenuItem value=""><em>Chọn thương hiệu</em></MenuItem>
+                    {brands.map(b => <MenuItem key={b._id} value={b._id}>{b.name}</MenuItem>)}
                 </Select>
             </FormControl>
-            <TextField
-                label="Mô tả sản phẩm"
-                variant="outlined"
-                size="small"
-                multiline
-                minRows={3}
-                value={description}
-                onChange={e => setDescription(e.target.value)}
-            />
+
+            <TextField label="Mô tả" variant="outlined" size="small" multiline minRows={3} value={description} onChange={e => setDescription(e.target.value)} />
 
             <Box>
-                <Typography variant="subtitle1" gutterBottom>
-                    Chọn Size sản phẩm
-                </Typography>
+                <Typography variant="subtitle2">Chọn Size</Typography>
                 <FormGroup row>
-                    {AVAILABLE_SIZES.map(size => (
-                        <FormControlLabel
-                            key={size}
-                            control={
-                                <Checkbox
-                                    checked={sizes.includes(size)}
-                                    onChange={handleSizeChange}
-                                    name={size}
-                                />
-                            }
-                            label={size}
-                        />
+                    {AVAILABLE_SIZES.map(s => (
+                        <FormControlLabel key={s} control={<Checkbox checked={sizes.includes(s)} onChange={handleSizeChange} name={s} />} label={s} />
                     ))}
                 </FormGroup>
             </Box>
 
             <Box>
-                <Typography variant="subtitle1" gutterBottom>
-                    Chọn Màu sản phẩm
-                </Typography>
+                <Typography variant="subtitle2">Chọn Màu</Typography>
                 <FormGroup row>
-                    {AVAILABLE_COLORS.map(color => (
-                        <FormControlLabel
-                            key={color}
-                            control={
-                                <Checkbox
-                                    checked={colors.includes(color)}
-                                    onChange={handleColorChange}
-                                    name={color}
-                                />
-                            }
-                            label={color}
-                        />
+                    {AVAILABLE_COLORS.map(c => (
+                        <FormControlLabel key={c} control={<Checkbox checked={colors.includes(c)} onChange={handleColorChange} name={c} />} label={c} />
                     ))}
                 </FormGroup>
             </Box>
 
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Button variant="contained" component="label" size="small">
-                    Tải ảnh sản phẩm
-                    <input
-                        type="file"
-                        hidden
-                        accept="image/*"
-                        onChange={handleImageChange}
-                    />
+                <Button variant="contained" component="label">
+                    Ảnh sản phẩm
+                    <input type="file" hidden accept="image/*" onChange={handleImageChange} />
                 </Button>
-                {preview && <Avatar src={preview} alt="Ảnh sản phẩm" sx={{ width: 56, height: 56 }} />}
+                {preview && <Avatar src={preview} sx={{ width: 56, height: 56 }} />}
             </Box>
 
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Button variant="contained" component="label" size="small">
-                    Tải ảnh banner
-                    <input
-                        type="file"
-                        hidden
-                        accept="image/*"
-                        onChange={handleBannerChange}
-                    />
+                <Button variant="contained" component="label">
+                    Banner
+                    <input type="file" hidden accept="image/*" onChange={handleBannerChange} />
                 </Button>
-                {bannerPreview && <Avatar src={bannerPreview} alt="Ảnh banner" sx={{ width: 120, height: 56, borderRadius: 1 }} />}
+                {bannerPreview && <Avatar src={bannerPreview} sx={{ width: 120, height: 56, borderRadius: 1 }} />}
             </Box>
 
-            <Box sx={{ display: 'flex', gap: 2 }}>
-                <Button variant="contained" color="primary" type="submit">
-                    {product ? 'Cập nhật' : 'Thêm'}
-                </Button>
-                {product && (
-                    <Button variant="outlined" color="secondary" onClick={() => onSuccess()}>
-                        Hủy
-                    </Button>
-                )}
-            </Box>
+            <Button variant="contained" color="primary" type="submit">{product ? 'Cập nhật' : 'Thêm'}</Button>
         </Box>
     );
 }

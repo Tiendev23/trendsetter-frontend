@@ -191,10 +191,15 @@ export default function UserList() {
                                     <IconButton onClick={() => handleEdit(u)} aria-label="edit">
                                         <EditIcon />
                                     </IconButton>
-                                    <IconButton onClick={() => handleDelete(u._id)} aria-label="delete">
+                                    <IconButton
+                                        onClick={() => handleDelete(u._id)}
+                                        aria-label="delete"
+                                        disabled={u.role === 'admin'}
+                                    >
                                         <DeleteIcon />
                                     </IconButton>
                                 </TableCell>
+
                             </TableRow>
                         ))}
                     </TableBody>
